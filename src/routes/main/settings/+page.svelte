@@ -1,0 +1,46 @@
+<script lang="ts">
+  import * as Tabs from "$lib/components/ui/tabs/index.js";
+  import Live from "./live.svelte";
+  import History from "./history.svelte";
+  import Shortcuts from "./shortcuts.svelte";
+  import Network from "./network.svelte";
+  import PlayerOverlay from "./player-overlay.svelte";
+  import Debug from "./debug.svelte";
+
+  const settingsTabs = [
+    { id: "live", label: "Live" },
+    { id: "playerOverlay", label: "Player Overlay" },
+    { id: "history", label: "Past Encounters" },
+    { id: "network", label: "Network" },
+    { id: "shortcuts", label: "Shortcuts" },
+    { id: "debug", label: "Debug" },
+  ];
+  // Track the active tab so we can lazy-mount tab content. The Tabs implementation
+  // used here will keep all children mounted by default which causes every
+  // settings tab to initialize on page load. That in turn triggers backend
+  // side-effects from every tab and can stall the live emitter. We render only
+  // the currently active tab component to avoid that.
+  let activeTab = $state("live");
+</script>
+
+<Tabs.Root bind:value={activeTab}>
+  <Tabs.List>
+    {#each settingsTabs as settingsTab (settingsTab.id)}
+      <Tabs.Trigger value={settingsTab.id}>{settingsTab.label}</Tabs.Trigger>
+    {/each}
+  </Tabs.List>
+
+  {#if activeTab === "live"}
+    <Live />
+  {:else if activeTab === "playerOverlay"}
+    <PlayerOverlay />
+  {:else if activeTab === "history"}
+    <History />
+  {:else if activeTab === "network"}
+    <Network />
+  {:else if activeTab === "shortcuts"}
+    <Shortcuts />
+  {:else if activeTab === "debug"}
+    <Debug />
+  {/if}
+</Tabs.Root>

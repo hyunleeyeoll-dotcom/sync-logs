@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Sync</title>
+  </head>
+  <body>
+    <main class="wrap">
+      <div class="card header-card">
+        <div>
+          <h1>Sync</h1>
+          <p>
+            This is the placeholder release page for <strong>Sync</strong>.
+            Publish installers here once Sync has its own release pipeline and
+            distribution flow.
+          </p>
+        </div>
+
+        <div class="actions">
+          <a id="download-latest" class="button" href="/downloads/latest-setup.exe" download>Download Latest</a>
+          <a class="button secondary" href="#changelog">Changelog</a>
+        </div>
+
+        <div id="latest-info">Checking for latest installer...</div>
+
+        <footer>Update <code>/public</code> to keep the Sync release page current.</footer>
+      </div>
+
+      <section id="changelog" class="card">
+        <div class="changelog-header">
+          <h2>Release Notes</h2>
+          <div>
+            <a class="button secondary" href="#" style="text-decoration:none">Back to top</a>
+          </div>
+        </div>
+        <p class="changelog-summary">
+          The list below is populated from <code>/downloads/manifest.json</code>.
+          When you are ready to ship Sync builds, add release files to
+          <code>/public/downloads/</code> or let CI generate the manifest.
+        </p>
+
+        <div id="changelog-loading">Loading releases...</div>
+        <ul id="changelog-list" class="releases" hidden></ul>
+      </section>
+    </main>
+
+    <script>
+      (async function () {
+        const infoEl = document.getElementById("latest-info");
+        const dl = document.getElementById("download-latest");
+        const loading = document.getElementById("changelog-loading");
+        const list = document.getElementById("changelog-list");
+        try {
+          const manifestUrls = ["/downloads/manifest.json", "/manifest.json"];
+          let manifest = null;
+          for (const url of manifestUrls) {
+            try {
+              const resp = await fetch(url, { cache: "no-store" });
+              if (!resp.ok) continue;
+              manifest = await resp.json();
+              break;
+            } catch (_err) {
+              // try next source
+            }
+          }
+          if (!manifest) throw new Error("manifest not found");
+
+          let latestName = manifest.latest;
+          if (!latestName && Array.isArray(manifest.versions) && manifest.versions.length) {
+            latestName = manifest.versions[0].filename;
+          }
+          if (latestName) {
+            const isAbsolute = /^https?:\/\//i.test(latestName) || latestName.startsWith("/");
+            dl.href = isAbsolute ? latestName : "/downloads/" + latestName;
+            dl.setAttribute("download", "");
+            const v =
+              (manifest.versions && manifest.versions.find((entry) => entry.filename === latestName)) ||
+              null;
+            infoEl.textContent = v
+              ? `Latest: ${v.version || ""} - released ${v.date || "unknown"}`
+              : `Latest file: ${latestName}`;
+            dl.textContent = v ? `Download Latest (${v.version || latestName})` : "Download Latest";
+          } else {
+            infoEl.textContent =
+              "No installers published yet. Place installer files in /downloads/ and update manifest.json.";
+            dl.classList.add("disabled");
+          }
+
+          const versions = manifest.versions || [];
+          if (versions.length === 0) {
+            loading.textContent = "No releases found in manifest.json.";
+          } else {
+            loading.hidden = true;
+            list.hidden = false;
+            versions.forEach((entry) => {
+              const li = document.createElement("li");
+              li.className = "release";
+
+              const left = document.createElement("div");
+              const title = document.createElement("div");
+              title.innerHTML = `<strong>${entry.version || entry.filename}</strong> <span class="meta">${entry.date || ""}</span>`;
+              const notes = document.createElement("div");
+              notes.className = "meta";
+              notes.textContent = entry.notes || "";
+              left.appendChild(title);
+              left.appendChild(notes);
+
+              const right = document.createElement("div");
+              const dlk = document.createElement("a");
+              dlk.className = "button";
+              const fn = entry.filename || "";
+              const isAbsolute = /^https?:\/\//i.test(fn) || fn.startsWith("/");
+              dlk.href = isAbsolute ? fn : "/downloads/" + fn;
+              dlk.textContent = "Download";
+              dlk.setAttribute("download", "");
+              right.appendChild(dlk);
+
+              li.appendChild(left);
+              li.appendChild(right);
+              list.appendChild(li);
+            });
+          }
+        } catch (err) {
+          console.warn("Could not load downloads manifest", err);
+          infoEl.textContent =
+            "No downloads manifest found. Add /public/downloads/manifest.json or let CI generate one.";
+          loading.textContent = "Could not load releases manifest.";
+        }
+      })();
+    </script>
+  </body>
+</html>

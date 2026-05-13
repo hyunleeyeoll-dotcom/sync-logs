@@ -1,0 +1,190 @@
+name: 'publish'
+
+on:
+  push:
+    tags:
+      - '*'
+
+# This workflow will trigger on each push to the `release` branch to create or update a GitHub release, build your app, and upload the artifacts to the release.
+
+jobs:
+  publish-tauri:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: 'windows-latest'
+            args: ''
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable # Set this to dtolnay/rust-toolchain@nightly
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - name: install frontend dependencies
+        run: npm install # change this to npm, pnpm or bun depending on which one you use.
+
+      - name: Read changelog
+        run: |
+          $raw = Get-Content CHANGELOG.md -Raw
+          $matches = [regex]::Matches($raw, "(?m)^## .+")
+          if ($matches.Count -eq 0) {
+            Write-Error "No changelog entries found."
+            exit 1
+          }
+
+          $start = $matches[0].Index
+          $end = if ($matches.Count -gt 1) { $matches[1].Index } else { $raw.Length }
+          $latest = $raw.Substring($start, $end - $start).Trim()
+
+          @(
+            'RELEASE_BODY<<EOF'
+            $latest
+            'EOF'
+          ) | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Determine release type
+        id: release_type
+        run: |
+          $tag = $env:GITHUB_REF -replace 'refs/tags/', ''
+          # Check for semver pre-release (hyphen followed by anything)
+          if ($tag -match 'v?\d+\.\d+\.\d+-.+') {
+            echo "IS_PRERELEASE=true" >> $env:GITHUB_ENV
+            Write-Host "Detected prerelease tag: $tag"
+          } else {
+            echo "IS_PRERELEASE=false" >> $env:GITHUB_ENV
+            Write-Host "Detected stable release tag: $tag"
+          }
+
+      - name: build and release tauri-apps
+        uses: tauri-apps/tauri-action@v0
+        id: tauri
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
+          includeDebug: false
+          includeUpdaterJson: true
+          updaterJsonPreferNsis: true
+          releaseName: 'v__VERSION__'
+          releaseBody: ${{ env.RELEASE_BODY }}
+          releaseDraft: false
+          prerelease: ${{ env.IS_PRERELEASE == 'true' }}
+          args: ${{ matrix.args }}
+
+      - name: Force publish GitHub release
+        if: ${{ success() }}
+        uses: actions/github-script@v7
+        env:
+          APP_VERSION: ${{ steps.tauri.outputs.appVersion }}
+          IS_PRERELEASE: ${{ env.IS_PRERELEASE }}
+        with:
+          script: |
+            const refTag = process.env.GITHUB_REF?.replace('refs/tags/', '');
+            const versionTag = process.env.APP_VERSION ? `v${process.env.APP_VERSION}` : undefined;
+
+            // Try a few common tag shapes to match whatever was pushed
+            const candidates = Array.from(new Set([
+              refTag,
+              versionTag,
+              versionTag?.replace(/^v/, ''),
+              refTag && !refTag.startsWith('v') ? `v${refTag}` : undefined,
+              refTag?.startsWith('v') ? refTag.slice(1) : undefined,
+            ].filter(Boolean)));
+
+            if (candidates.length === 0) {
+              core.warning('No tag detected, skipping publish step.');
+              return;
+            }
+
+            let release;
+            for (const tag of candidates) {
+              try {
+                const rel = await github.rest.repos.getReleaseByTag({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  tag,
+                });
+                release = { rel, tag };
+                break;
+              } catch (error) {
+                if (error.status !== 404) throw error;
+              }
+            }
+
+            if (!release) {
+              core.warning(`Release not found for tags: ${candidates.join(', ')}`);
+              return;
+            }
+
+            const { rel, tag } = release;
+            if (rel.data.draft) {
+              await github.rest.repos.updateRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id: rel.data.id,
+                draft: false,
+                make_latest: process.env.IS_PRERELEASE === 'true' ? 'false' : 'true',
+              });
+              core.info(`Published release for ${tag}`);
+            } else {
+              core.info(`Release for ${tag} already published`);
+            }
+
+      - name: Upload Release Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: resonance-logs-production-v${{ steps.tauri.outputs.appVersion }}
+          path: src-tauri/target/release/bundle/
+
+
+      - name: Upload Debug Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: resonance-logs-debug-v${{ steps.tauri.outputs.appVersion }}
+          path: src-tauri/target/debug/bundle/
+
+      - name: Update updater.json
+        if: ${{ env.IS_PRERELEASE == 'false' }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git checkout main
+          git pull origin main
+
+          # Write release notes to a temporary file
+          Set-Content -Path release_notes_temp.md -Value $env:RELEASE_BODY
+
+          # Generate updater.json
+          node scripts/generate_updater.js "${{ steps.tauri.outputs.appVersion }}" release_notes_temp.md src-tauri/target/release/bundle/ updater.json
+
+          # Commit and push
+          git add updater.json
+          git commit -m "Update updater.json for version ${{ steps.tauri.outputs.appVersion }}" || echo "No changes to commit"
+          git push origin main
+
+      - name: Upload latest.json to release
+        if: ${{ success() && env.IS_PRERELEASE == 'false' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          copy updater.json latest.json
+          gh release upload v${{ steps.tauri.outputs.appVersion }} latest.json --clobber

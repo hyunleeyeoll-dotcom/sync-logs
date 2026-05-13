@@ -1,0 +1,161 @@
+-- Remove DPS and duration snapshot columns from actor encounter stats
+CREATE TABLE actor_encounter_stats_backup AS
+SELECT
+    encounter_id,
+    actor_id,
+    name,
+    class_id,
+    class_spec,
+    ability_score,
+    level,
+    damage_dealt,
+    heal_dealt,
+    damage_taken,
+    hits_dealt,
+    hits_heal,
+    hits_taken,
+    crit_hits_dealt,
+    crit_hits_heal,
+    crit_hits_taken,
+    lucky_hits_dealt,
+    lucky_hits_heal,
+    lucky_hits_taken,
+    crit_total_dealt,
+    crit_total_heal,
+    crit_total_taken,
+    lucky_total_dealt,
+    lucky_total_heal,
+    lucky_total_taken,
+    boss_damage_dealt,
+    boss_hits_dealt,
+    boss_crit_hits_dealt,
+    boss_lucky_hits_dealt,
+    boss_crit_total_dealt,
+    boss_lucky_total_dealt,
+    revives,
+    is_player,
+    is_local_player,
+    attributes
+FROM actor_encounter_stats;
+
+DROP TABLE actor_encounter_stats;
+
+CREATE TABLE actor_encounter_stats (
+    encounter_id INTEGER NOT NULL,
+    actor_id BIGINT NOT NULL,
+    name TEXT,
+    class_id INTEGER,
+    class_spec INTEGER,
+    ability_score INTEGER,
+    level INTEGER,
+    damage_dealt BIGINT NOT NULL,
+    heal_dealt BIGINT NOT NULL,
+    damage_taken BIGINT NOT NULL,
+    hits_dealt BIGINT NOT NULL,
+    hits_heal BIGINT NOT NULL,
+    hits_taken BIGINT NOT NULL,
+    crit_hits_dealt BIGINT NOT NULL,
+    crit_hits_heal BIGINT NOT NULL,
+    crit_hits_taken BIGINT NOT NULL,
+    lucky_hits_dealt BIGINT NOT NULL,
+    lucky_hits_heal BIGINT NOT NULL,
+    lucky_hits_taken BIGINT NOT NULL,
+    crit_total_dealt BIGINT NOT NULL,
+    crit_total_heal BIGINT NOT NULL,
+    crit_total_taken BIGINT NOT NULL,
+    lucky_total_dealt BIGINT NOT NULL,
+    lucky_total_heal BIGINT NOT NULL,
+    lucky_total_taken BIGINT NOT NULL,
+    boss_damage_dealt BIGINT NOT NULL,
+    boss_hits_dealt BIGINT NOT NULL,
+    boss_crit_hits_dealt BIGINT NOT NULL,
+    boss_lucky_hits_dealt BIGINT NOT NULL,
+    boss_crit_total_dealt BIGINT NOT NULL,
+    boss_lucky_total_dealt BIGINT NOT NULL,
+    revives BIGINT NOT NULL,
+    is_player INTEGER NOT NULL,
+    is_local_player INTEGER NOT NULL,
+    attributes TEXT,
+    PRIMARY KEY (encounter_id, actor_id)
+);
+
+INSERT INTO actor_encounter_stats
+SELECT
+    encounter_id,
+    actor_id,
+    name,
+    class_id,
+    class_spec,
+    ability_score,
+    level,
+    damage_dealt,
+    heal_dealt,
+    damage_taken,
+    hits_dealt,
+    hits_heal,
+    hits_taken,
+    crit_hits_dealt,
+    crit_hits_heal,
+    crit_hits_taken,
+    lucky_hits_dealt,
+    lucky_hits_heal,
+    lucky_hits_taken,
+    crit_total_dealt,
+    crit_total_heal,
+    crit_total_taken,
+    lucky_total_dealt,
+    lucky_total_heal,
+    lucky_total_taken,
+    boss_damage_dealt,
+    boss_hits_dealt,
+    boss_crit_hits_dealt,
+    boss_lucky_hits_dealt,
+    boss_crit_total_dealt,
+    boss_lucky_total_dealt,
+    revives,
+    is_player,
+    is_local_player,
+    attributes
+FROM actor_encounter_stats_backup;
+
+DROP TABLE actor_encounter_stats_backup;
+
+-- Remove duration column from encounters table
+CREATE TABLE encounters_backup AS
+SELECT
+    id,
+    started_at_ms,
+    ended_at_ms,
+    local_player_id,
+    total_dmg,
+    total_heal,
+    scene_id,
+    scene_name
+FROM encounters;
+
+DROP TABLE encounters;
+
+CREATE TABLE encounters (
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    started_at_ms BIGINT NOT NULL,
+    ended_at_ms BIGINT,
+    local_player_id BIGINT,
+    total_dmg BIGINT,
+    total_heal BIGINT,
+    scene_id INTEGER,
+    scene_name TEXT
+);
+
+INSERT INTO encounters
+SELECT
+    id,
+    started_at_ms,
+    ended_at_ms,
+    local_player_id,
+    total_dmg,
+    total_heal,
+    scene_id,
+    scene_name
+FROM encounters_backup;
+
+DROP TABLE encounters_backup;

@@ -1,0 +1,89 @@
+{
+    "$schema": "https://schema.tauri.app/config/2",
+    "productName": "Sync",
+    "version": "0.19.4-beta",
+    "identifier": "com.sync.desktop",
+    "build": {
+        "beforeDevCommand": "npm run dev:stop-windivert",
+        "beforeBuildCommand": "npm run build:stop-windivert",
+        "devUrl": "http://localhost:1420",
+        "frontendDist": "../build"
+    },
+    "app": {
+        "windows": [
+            {
+                "title": "Sync Live",
+                "label": "live",
+                "url": "live",
+                "shadow": false,
+                "decorations": false,
+                "transparent": true,
+                "minWidth": 410,
+                "minHeight": 120,
+                "alwaysOnTop": true,
+                "skipTaskbar": false
+            },
+            {
+                "title": "Sync Player Overlay",
+                "label": "player-overlay",
+                "url": "live/player-overlay",
+                "shadow": false,
+                "decorations": false,
+                "transparent": true,
+                "minWidth": 300,
+                "minHeight": 120,
+                "alwaysOnTop": true,
+                "skipTaskbar": true,
+                "visible": false
+            },
+            {
+                "title": "Sync 0.19.4-beta",
+                "label": "main",
+                "url": "main",
+                "minWidth": 855,
+                "minHeight": 300,
+                "visible": false,
+                "transparent": true
+            }
+        ],
+        "security": {
+            "csp": null
+        }
+    },
+    "bundle": {
+        "active": true,
+        "copyright": "GNU General Public License v3.0",
+        "targets": [
+            "nsis"
+        ],
+        "icon": [
+            "icons/32x32.png",
+            "icons/128x128.png",
+            "icons/128x128@2x.png",
+            "icons/icon.icns",
+            "icons/icon.ico"
+        ],
+        "resources": [
+            "./WinDivert.dll",
+            "./WinDivert64.sys",
+            "./meter-data/"
+        ],
+        "createUpdaterArtifacts": true,
+        "windows": {
+            "certificateThumbprint": null,
+            "digestAlgorithm": "sha256",
+            "timestampUrl": null
+        }
+    },
+    "plugins": {
+        "updater": {
+            "active": true,
+            "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDlGNzc2RkRGMjk2RTBDQjgKUldTNERHNHAzMjkzbjBkSndaNk9qNFRBdXdlb1BTY0wwZllmazhxU3pUSDNvNVRwc1picVh0TDQK",
+            "endpoints": [],
+            "dialog": true,
+            "windows": {
+                "installMode": "basicUi"
+            }
+        }
+    }
+}
