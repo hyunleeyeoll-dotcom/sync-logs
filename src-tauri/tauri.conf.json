@@ -78,7 +78,7 @@
     "plugins": {
         "updater": {
             "active": true,
-            "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDlGNzc2RkRGMjk2RTBDQjgKUldTNERHNHAzMjkzbjBkSndaNk9qNFRBdXdlb1BTY0wwZllmazhxU3pUSDNvNVRwc1picVh0TDQK",
+            "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDk2NDQ0RjQ0OTVBQUIzRUQKUldUdHM2cVZSRTlFbGpZa3RSY3l1c25aWkFOdVFHbXNELzB5WnZHMmpieUV1bys0Z3FDNUVmQWIK",
             "endpoints": [],
             "dialog": true,
             "windows": {
