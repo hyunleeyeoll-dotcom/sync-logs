@@ -72,6 +72,29 @@ jobs:
             Write-Host "Detected stable release tag: $tag"
           }
 
+      - name: Validate Tauri signing key
+        run: |
+          if (-not $env:TAURI_SIGNING_PRIVATE_KEY) {
+            Write-Error "TAURI_SIGNING_PRIVATE_KEY is missing or empty."
+            exit 1
+          }
+
+          $firstLine = ($env:TAURI_SIGNING_PRIVATE_KEY -split "`n")[0].Trim()
+          if ($firstLine -notin @(
+            '-----BEGIN PRIVATE KEY-----',
+            '-----BEGIN RSA PRIVATE KEY-----'
+          )) {
+            Write-Error "TAURI_SIGNING_PRIVATE_KEY does not start with a recognized private key header. Found: $firstLine"
+            exit 1
+          }
+
+          Write-Host "TAURI_SIGNING_PRIVATE_KEY is present and starts with a valid private key header."
+          if (-not $env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD) {
+            Write-Host "TAURI_SIGNING_PRIVATE_KEY_PASSWORD is empty."
+          } else {
+            Write-Host "TAURI_SIGNING_PRIVATE_KEY_PASSWORD is present."
+          }
+
       - name: build and release tauri-apps
         uses: tauri-apps/tauri-action@v0
         id: tauri
