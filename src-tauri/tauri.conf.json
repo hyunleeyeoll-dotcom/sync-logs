@@ -4,8 +4,8 @@
     "version": "0.19.4-beta",
     "identifier": "com.sync.desktop",
     "build": {
-        "beforeDevCommand": "npm run dev:stop-windivert",
-        "beforeBuildCommand": "npm run build:stop-windivert",
+        "beforeDevCommand": "npm run dev",
+        "beforeBuildCommand": "npm run build",
         "devUrl": "http://localhost:1420",
         "frontendDist": "../build"
     },
