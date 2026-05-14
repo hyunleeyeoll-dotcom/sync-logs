@@ -68,7 +68,7 @@
             "./WinDivert64.sys",
             "./meter-data/"
         ],
-        "createUpdaterArtifacts": true,
+        "createUpdaterArtifacts": false,
         "windows": {
             "certificateThumbprint": null,
             "digestAlgorithm": "sha256",
