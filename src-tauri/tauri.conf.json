@@ -1,7 +1,7 @@
 {
     "$schema": "https://schema.tauri.app/config/2",
     "productName": "Sync",
-    "version": "0.19.4-beta",
+    "version": "0.19.5-beta",
     "identifier": "com.sync.desktop",
     "build": {
         "beforeDevCommand": "npm run dev",
@@ -37,7 +37,7 @@
                 "visible": false
             },
             {
-                "title": "Sync 0.19.4-beta",
+                "title": "Sync",
                 "label": "main",
                 "url": "main",
                 "minWidth": 855,

@@ -1,6 +1,6 @@
 [package]
 name = "sync"
-version = "0.1.0"
+version = "0.19.5-beta"
 description = "Sync desktop meter for Blue Protocol: Star Resonance"
 authors = ["Keberrye", "Deusexitium"]
 edition = "2024"
@@ -18,14 +18,14 @@ name = "sync_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
-tauri-build = { version = "2.6.0", features = [] }
+tauri-build = { version = "=2.6.1", features = [] }
 serde_json = "1"
 
 [dependencies]
 # image-png for frontend
-tauri = { version = "2.6.0", features = ["tray-icon", "image-png"] }
+tauri = { version = "=2.11.1", features = ["tray-icon", "image-png"] }
 serde = { version = "1.0.219", features = ["derive"] }
-tauri-plugin-single-instance = "2.3.4"
+tauri-plugin-single-instance = "=2.4.2"
 tracing = "0.1"
 tracing-log = "0.2"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
@@ -40,17 +40,17 @@ bytes = "1.10.1"
 zstd = "0.13.3"
 byteorder = "1.5.0"
 prost = "0.14.1"
-specta = "2.0.0-rc.21"
+specta = "=2.0.0-rc.22"
 specta-typescript = "0.0.9"
-tauri-specta = {version = "2.0.0-rc.21", features = ["typescript"] }
-tauri-plugin-window-state = "2.4.0"
+tauri-specta = { version = "=2.0.0-rc.21", features = ["typescript"] }
+tauri-plugin-window-state = "=2.4.1"
 serde_json = { version = "1.0.145", features = ["arbitrary_precision"] }
 window-vibrancy = "0.6.0"
-tauri-plugin-clipboard-manager = "2.1"
-tauri-plugin-svelte = "3"
-tauri-plugin-os = "2.1"
-tauri-plugin-opener = "2.5.2"
-tauri-plugin-dialog = "2.1"
+tauri-plugin-clipboard-manager = "=2.3.2"
+tauri-plugin-svelte = "=3.2.0"
+tauri-plugin-os = "=2.3.2"
+tauri-plugin-opener = "=2.5.4"
+tauri-plugin-dialog = "=2.7.1"
 ts-rs = "11.1.0"
 chrono-tz = "0.10.4"
 diesel = { version = "2.2.4", features = ["sqlite", "chrono", "r2d2", "64-column-tables"] }
@@ -72,5 +72,5 @@ libc = "0.2.177"
 path = "./src/blueprotobuf-lib"
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
-tauri-plugin-global-shortcut = "2.3.1"
-tauri-plugin-updater = "2"
+tauri-plugin-global-shortcut = "=2.3.1"
+tauri-plugin-updater = "=2.10.1"

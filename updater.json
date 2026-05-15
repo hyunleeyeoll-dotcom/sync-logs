@@ -1,6 +1,6 @@
 {
-  "version": "0.19.4-beta",
+  "version": "0.19.5-beta",
   "notes": "# Sync\n\nUpdater artifacts are intentionally disabled while the fork is being reworked.",
-  "pub_date": "2026-05-13T00:00:00.000Z",
+  "pub_date": "2026-05-15T00:00:00.000Z",
   "platforms": {}
 }
