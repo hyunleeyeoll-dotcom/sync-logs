@@ -1,6 +1,6 @@
 [package]
 name = "sync"
-version = "0.19.5-beta"
+version = "0.19.5-beta.1"
 description = "Sync desktop meter for Blue Protocol: Star Resonance"
 authors = ["Keberrye", "Deusexitium"]
 edition = "2024"

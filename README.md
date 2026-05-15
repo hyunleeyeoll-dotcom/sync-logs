@@ -24,7 +24,7 @@ npm run build:installer
 
 The local installer script writes the bundle to `src-tauri/target-installer/release/bundle/nsis/`. It uses an isolated Cargo target directory to avoid Windows file-lock issues if a previously run build still has the bundled WinDivert driver loaded from the default `target/release` path.
 
-For GitHub releases, push a tag that matches the app version in `src-tauri/tauri.conf.json` such as `v0.19.5-beta`. The release workflow will build the NSIS installer and attach the bundle artifacts automatically.
+For GitHub releases, push a tag that matches the app version in `src-tauri/tauri.conf.json` such as `v0.19.5-beta.1`. The release workflow will build the NSIS installer and attach the bundle artifacts automatically.
 
 ## Attribution
 

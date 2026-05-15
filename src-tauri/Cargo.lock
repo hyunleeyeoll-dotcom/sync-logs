@@ -4658,7 +4658,7 @@ dependencies = [
 
 [[package]]
 name = "sync"
-version = "0.19.5-beta"
+version = "0.19.5-beta.1"
 dependencies = [
  "blueprotobuf-lib",
  "byteorder",

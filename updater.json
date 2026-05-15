@@ -1,5 +1,5 @@
 {
-  "version": "0.19.5-beta",
+  "version": "0.19.5-beta.1",
   "notes": "# Sync\n\nUpdater artifacts are intentionally disabled while the fork is being reworked.",
   "pub_date": "2026-05-15T00:00:00.000Z",
   "platforms": {}
