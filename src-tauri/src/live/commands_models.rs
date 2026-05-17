@@ -104,6 +104,16 @@ pub struct PlayerRow {
     pub haste: Option<i64>,
     /// The mastery of the player.
     pub mastery: Option<i64>,
+    /// The raw attack power of the player.
+    pub attack_power: Option<i64>,
+    /// The raw defense power of the player.
+    pub defense_power: Option<i64>,
+    /// The physical attack stat of the player.
+    pub physical_attack: Option<i64>,
+    /// The magic attack stat of the player.
+    pub magic_attack: Option<i64>,
+    /// The base main-stat value tracked by the parser.
+    pub base_strength: Option<i64>,
     /// The element flag of the player.
     pub element_flag: Option<i64>,
     /// The energy flag of the player.

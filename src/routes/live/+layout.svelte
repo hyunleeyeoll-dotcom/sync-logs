@@ -23,6 +23,10 @@
   } from "$lib/api";
   import { writable } from "svelte/store";
   import { beforeNavigate, afterNavigate } from "$app/navigation";
+  import {
+    getCurrentWebviewWindow,
+    WebviewWindow,
+  } from "@tauri-apps/api/webviewWindow";
 
   // Store for pause state
   export const isPaused = writable(false);
@@ -46,6 +50,9 @@
 
   let { children } = $props();
   // let screenshotDiv: HTMLDivElement | undefined = $state();
+  const appWindow = getCurrentWebviewWindow();
+  const currentWindowLabel = appWindow.label;
+  const isPlayerOverlayWindow = currentWindowLabel === "player-overlay";
 
   let notificationToast: NotificationToast;
   let mainElement: HTMLElement | undefined = undefined;
@@ -67,6 +74,44 @@
   const DISCONNECT_THRESHOLD = 5000;
   // Track if component is destroyed to prevent callbacks from firing after unmount
   let isDestroyed = false;
+
+  async function syncOverlayWindowState() {
+    if (currentWindowLabel !== "live") return;
+
+    try {
+      const overlayWindow = await WebviewWindow.getByLabel("player-overlay");
+      if (!overlayWindow) return;
+
+      await overlayWindow.setIgnoreCursorEvents(
+        SETTINGS.live.playerOverlay.state.clickthrough,
+      );
+
+      if (SETTINGS.live.playerOverlay.state.visible) {
+        await overlayWindow.show();
+      } else {
+        await overlayWindow.hide();
+      }
+    } catch (error) {
+      console.error("Failed to sync player overlay window state", error);
+    }
+  }
+
+  async function enforceOverlayWindowVisibility() {
+    if (!isPlayerOverlayWindow) return;
+
+    try {
+      if (!SETTINGS.live.playerOverlay.state.visible) {
+        await appWindow.hide();
+        return;
+      }
+
+      await appWindow.setIgnoreCursorEvents(
+        SETTINGS.live.playerOverlay.state.clickthrough,
+      );
+    } catch (error) {
+      console.error("Failed to enforce player overlay visibility", error);
+    }
+  }
 
   async function setupEventListeners() {
     if (isDestroyed || isReconnecting || listenersSetupInProgress) return;
@@ -379,6 +424,8 @@
 
   onMount(() => {
     isDestroyed = false;
+    void enforceOverlayWindowVisibility();
+    void syncOverlayWindowState();
     setupEventListeners();
     startReconnectCheck();
 
@@ -502,25 +549,36 @@
       cleanupStores();
     }
   });
+
+  $effect(() => {
+    SETTINGS.live.playerOverlay.state.visible;
+    SETTINGS.live.playerOverlay.state.clickthrough;
+    void syncOverlayWindowState();
+    void enforceOverlayWindowVisibility();
+  });
 </script>
 
 <!-- flex flex-col min-h-screen → makes the page stretch full height and stack header, body, and footer. -->
 <!-- flex-1 on <main> → makes the body expand to fill leftover space, pushing the footer down. -->
-<div
-  class="flex h-screen flex-col bg-background-live text-[13px] text-foreground rounded-xl shadow-[0_10px_30px_-10px_rgba(0,0,0,0.6)]"
-  style="padding: {SETTINGS.live.headerCustomization.state.windowPadding}px"
-  data-tauri-drag-region
->
-  <HeaderCustom />
-  <main
-    bind:this={mainElement}
-    class="flex-1 overflow-y-auto gap-4 rounded-lg bg-card/20"
+{#if isPlayerOverlayWindow}
+  {@render children()}
+{:else}
+  <div
+    class="flex h-screen flex-col bg-background-live text-[13px] text-foreground rounded-xl shadow-[0_10px_30px_-10px_rgba(0,0,0,0.6)]"
+    style="padding: {SETTINGS.live.headerCustomization.state.windowPadding}px"
+    data-tauri-drag-region
   >
-    {@render children()}
-  </main>
-  <!-- Footer removed; navigation and version moved into Header -->
-  <NotificationToast bind:this={notificationToast} />
-</div>
+    <HeaderCustom />
+    <main
+      bind:this={mainElement}
+      class="flex-1 overflow-y-auto gap-4 rounded-lg bg-card/20"
+    >
+      {@render children()}
+    </main>
+    <!-- Footer removed; navigation and version moved into Header -->
+    <NotificationToast bind:this={notificationToast} />
+  </div>
+{/if}
 
 <style>
   :global {

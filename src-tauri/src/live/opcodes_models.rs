@@ -810,6 +810,12 @@ impl Entity {
             .and_then(|v| v.as_int())
     }
 
+    /// Get base strength/main-stat value as i64.
+    pub fn base_strength(&self) -> Option<i64> {
+        self.get_attr(AttrType::BaseStrength)
+            .and_then(|v| v.as_int())
+    }
+
     /// Get star/enhancement level as i64.
     pub fn star_level(&self) -> Option<i64> {
         self.get_attr(AttrType::StarLevel).and_then(|v| v.as_int())

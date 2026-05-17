@@ -10,6 +10,8 @@ use std::process::{Command, Stdio};
 use std::path::{Path, PathBuf};
 use std::sync::OnceLock;
 
+#[cfg(debug_assertions)]
+use specta_typescript::{BigIntExportBehavior, Typescript};
 use tauri::menu::MenuBuilder;
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
 use tauri::{LogicalPosition, LogicalSize, Manager, Position, Size, Window, WindowEvent};

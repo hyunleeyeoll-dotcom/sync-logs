@@ -9,11 +9,11 @@
 
   const settingsTabs = [
     { id: "live", label: "Live" },
-    { id: "playerOverlay", label: "Player Overlay" },
     { id: "history", label: "Past Encounters" },
     { id: "network", label: "Network" },
     { id: "shortcuts", label: "Shortcuts" },
     { id: "debug", label: "Debug" },
+    { id: "playerOverlay", label: "Player Stats" },
   ];
   // Track the active tab so we can lazy-mount tab content. The Tabs implementation
   // used here will keep all children mounted by default which causes every
@@ -24,7 +24,7 @@
 </script>
 
 <Tabs.Root bind:value={activeTab}>
-  <Tabs.List>
+  <Tabs.List class="h-auto flex-wrap justify-start">
     {#each settingsTabs as settingsTab (settingsTab.id)}
       <Tabs.Trigger value={settingsTab.id}>{settingsTab.label}</Tabs.Trigger>
     {/each}

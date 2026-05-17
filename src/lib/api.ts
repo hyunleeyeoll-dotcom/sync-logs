@@ -47,6 +47,23 @@ export type PlayerRow = {
   bossDmg: number;
   bossDps: number;
   bossDmgPct: number;
+  rankLevel?: number | null;
+  currentHp?: number | null;
+  maxHp?: number | null;
+  critStat?: number | null;
+  luckyStat?: number | null;
+  haste?: number | null;
+  mastery?: number | null;
+  attackPower?: number | null;
+  defensePower?: number | null;
+  physicalAttack?: number | null;
+  magicAttack?: number | null;
+  baseStrength?: number | null;
+  elementFlag?: number | null;
+  energyFlag?: number | null;
+  reductionLevel?: number | null;
+  seasonStrength?: number | null;
+  battleImagineNames?: string[] | null;
 };
 
 export type PlayersWindow = {

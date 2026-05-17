@@ -110,6 +110,16 @@
             description="Show others' ability score"
           />
           <SettingsSwitch
+            bind:checked={SETTINGS.live.general.state.showSeasonStrengthInMeters}
+            label="Season Strength / Illusion Strength"
+            description="Show season strength next to each player's name in the live meters"
+          />
+          <SettingsSwitch
+            bind:checked={SETTINGS.live.general.state.showBattleImaginesInMeters}
+            label="Battle Imagines"
+            description="Show each player's battle imagines in the live meters when available"
+          />
+          <SettingsSwitch
             bind:checked={SETTINGS.live.general.state.relativeToTopDPSPlayer}
             label="Relative to Top DPS - Player"
             description="Color bars are relative to top DPS player instead of all players. Useful for 20 man or World Bosses."

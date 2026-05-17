@@ -8,6 +8,10 @@
   import AbbreviatedNumber from "$lib/components/abbreviated-number.svelte";
   import PercentFormat from "$lib/components/percent-format.svelte";
   import getDisplayName from "$lib/name-display";
+  import {
+    getBattleImagineNames,
+    getPlayerPowerSummary,
+  } from "$lib/player-nameplate";
 
   // Create reactive data reference
   let rawHealData = $state(getHealPlayers().playerRows);
@@ -141,13 +145,22 @@
           : SETTINGS_OTHERS_NAME !== "Hide Others' Name"
             ? player.className
             : ""}
+        {@const powerSummary = getPlayerPowerSummary(
+          player,
+          isLocalPlayer,
+          SETTINGS.live.general.state,
+        )}
+        {@const battleImagineNames = getBattleImagineNames(
+          player,
+          SETTINGS.live.general.state,
+        )}
         <tr
           class="relative bg-background/40 hover:bg-muted/60 transition-colors cursor-pointer group"
           style="height: {tableSettings.playerRowHeight}px; font-size: {tableSettings.playerFontSize}px;"
           onclick={() => goto(`/live/heal/skills?playerUid=${player.uid}`)}
         >
           <td class="px-3 py-1 relative z-10">
-            <div class="flex items-center h-full gap-2">
+            <div class="flex items-center h-full gap-2 min-w-0">
               <img
                 style="width: {tableSettings.playerIconSize}px; height: {tableSettings.playerIconSize}px;"
                 class="object-contain"
@@ -158,30 +171,29 @@
                     `${player.className}${player.classSpecName ? " - " + player.classSpecName : ""}`,
                 )}
               />
-              {#if player.abilityScore > 0}
-                {#if SETTINGS.live.general.state.shortenAbilityScore}
-                  <span
-                    class="tabular-nums"
-                    style="color: {customThemeColors.tableTextColor};"
-                    ><AbbreviatedNumber
-                      num={player.abilityScore}
-                      suffixFontSize={tableSettings.abbreviatedFontSize}
-                      suffixColor={customThemeColors.tableAbbreviatedColor}
-                    /></span
-                  >
-                {:else}
-                  <span
-                    class="tabular-nums"
-                    style="color: {customThemeColors.tableTextColor};"
-                    >{player.abilityScore}</span
-                  >
-                {/if}
+              {#if powerSummary}
+                <span
+                  class="shrink-0 tabular-nums text-xs"
+                  style="color: {customThemeColors.tableAbbreviatedColor};"
+                  >{powerSummary}</span
+                >
               {/if}
               <span
-                class="truncate font-medium"
+                class="truncate font-medium min-w-0"
                 style="color: {customThemeColors.tableTextColor};"
                 >{displayName || `#${player.uid}`}</span
               >
+              {#if battleImagineNames.length}
+                <div class="flex items-center gap-1 shrink-0">
+                  {#each battleImagineNames as imagineName (imagineName)}
+                    <span
+                      class="rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-wide"
+                      style="border-color: {customThemeColors.border}; color: {customThemeColors.tableAbbreviatedColor};"
+                      >{imagineName}</span
+                    >
+                  {/each}
+                </div>
+              {/if}
             </div>
           </td>
           {#each visiblePlayerColumns as col (col.key)}

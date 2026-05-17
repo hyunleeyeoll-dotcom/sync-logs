@@ -190,7 +190,7 @@
     try {
       const nextState = !isPinned;
       await appWindow.setAlwaysOnTop(nextState);
-      isPinned = nextState;
+      await syncPinnedState();
     } catch (e) {
       console.error("Failed to toggle live window pin state", e);
     }

@@ -444,6 +444,11 @@ pub fn generate_players_window_heal(
                 lucky_stat: entity.lucky(),
                 haste: entity.haste(),
                 mastery: entity.mastery(),
+                attack_power: entity.attack_power(),
+                defense_power: entity.defense_power(),
+                physical_attack: entity.physical_attack(),
+                magic_attack: entity.magic_attack(),
+                base_strength: entity.base_strength(),
                 element_flag: entity
                     .get_attr(crate::live::opcodes_models::AttrType::ElementFlag)
                     .and_then(|v| v.as_int()),
@@ -531,6 +536,11 @@ pub fn generate_players_window_tanked(
                 lucky_stat: entity.lucky(),
                 haste: entity.haste(),
                 mastery: entity.mastery(),
+                attack_power: entity.attack_power(),
+                defense_power: entity.defense_power(),
+                physical_attack: entity.physical_attack(),
+                magic_attack: entity.magic_attack(),
+                base_strength: entity.base_strength(),
                 element_flag: entity
                     .get_attr(crate::live::opcodes_models::AttrType::ElementFlag)
                     .and_then(|v| v.as_int()),
@@ -646,6 +656,11 @@ pub fn generate_skills_window_dps(
             lucky_stat: entity.lucky(),
             haste: entity.haste(),
             mastery: entity.mastery(),
+            attack_power: entity.attack_power(),
+            defense_power: entity.defense_power(),
+            physical_attack: entity.physical_attack(),
+            magic_attack: entity.magic_attack(),
+            base_strength: entity.base_strength(),
             element_flag: entity
                 .get_attr(crate::live::opcodes_models::AttrType::ElementFlag)
                 .and_then(|v| v.as_int()),
@@ -753,6 +768,11 @@ pub fn generate_skills_window_heal(
             lucky_stat: entity.lucky(),
             haste: entity.haste(),
             mastery: entity.mastery(),
+            attack_power: entity.attack_power(),
+            defense_power: entity.defense_power(),
+            physical_attack: entity.physical_attack(),
+            magic_attack: entity.magic_attack(),
+            base_strength: entity.base_strength(),
             element_flag: entity
                 .get_attr(crate::live::opcodes_models::AttrType::ElementFlag)
                 .and_then(|v| v.as_int()),
@@ -844,6 +864,11 @@ pub fn generate_skills_window_tanked(
             lucky_stat: entity.lucky(),
             haste: entity.haste(),
             mastery: entity.mastery(),
+            attack_power: entity.attack_power(),
+            defense_power: entity.defense_power(),
+            physical_attack: entity.physical_attack(),
+            magic_attack: entity.magic_attack(),
+            base_strength: entity.base_strength(),
             element_flag: entity
                 .get_attr(crate::live::opcodes_models::AttrType::ElementFlag)
                 .and_then(|v| v.as_int()),
@@ -1002,6 +1027,11 @@ pub fn generate_player_row_filtered(
         lucky_stat: entity.lucky(),
         haste: entity.haste(),
         mastery: entity.mastery(),
+        attack_power: entity.attack_power(),
+        defense_power: entity.defense_power(),
+        physical_attack: entity.physical_attack(),
+        magic_attack: entity.magic_attack(),
+        base_strength: entity.base_strength(),
         element_flag: entity
             .get_attr(crate::live::opcodes_models::AttrType::ElementFlag)
             .and_then(|v| v.as_int()),
